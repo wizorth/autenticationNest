@@ -14,4 +14,4 @@
 docker-compose up -d
 ```
 
-6. start proyect: `npm start:dev`
+6. start proyect: `npm run start:dev`
