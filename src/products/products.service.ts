@@ -12,6 +12,8 @@ import { Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { NotFoundError } from 'rxjs';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { validate as isUUID } from 'uuid';
+import { title } from 'process';
 
 @Injectable()
 export class ProductsService {
@@ -42,11 +44,26 @@ export class ProductsService {
     });
   }
 
-  async findOne(id: string) {
-    const product = await this.productRepository.findOneBy({ id });
-    if (!product) {
-      throw new NotFoundException(`product with id ${id} not found`);
+  async findOne(term: string) {
+    //const product = await this.productRepository.findOneBy({ id });
+    let product: Product;
+
+    if (isUUID(term)) {
+      product = await this.productRepository.findOneBy({ id: term });
+    } else {
+      const queryBuilder = this.productRepository.createQueryBuilder();
+      product = await queryBuilder
+        .where('UPPER(title) =:title or slug =:slug', {
+          title: term.toUpperCase(),
+          slug: term.toLowerCase(),
+        })
+        .getOne();
     }
+
+    if (!product) {
+      throw new NotFoundException(`product with ${term} not found`);
+    }
+
     return product;
   }
 
