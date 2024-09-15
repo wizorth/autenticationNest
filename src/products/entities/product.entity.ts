@@ -8,7 +8,7 @@ import {
   ServerDescription,
 } from 'typeorm';
 
-import { ProductImagine } from './';
+import { ProductImage } from './';
 
 @Entity()
 export class Product {
@@ -55,10 +55,11 @@ export class Product {
   })
   tags: string[];
 
-  @OneToMany(() => ProductImagine, (productImage) => productImage.product, {
+  @OneToMany(() => ProductImage, (productImage) => productImage.product, {
     cascade: true,
+    eager: true,
   })
-  images?: ProductImagine[];
+  images?: ProductImage[];
 
   @BeforeInsert()
   checkSlugInsert() {
